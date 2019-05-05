@@ -60,6 +60,6 @@ if (require.main === module) {
   (async () => {
     const server = await getServer();
     await server.start();
-    console.log(`Server listening at: ${server.info.uri}`);
+    server.log(["server"], `Server listening at: ${server.info.uri}`);
   })();
 }

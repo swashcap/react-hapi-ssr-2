@@ -1,8 +1,37 @@
 {
-  "name": "react-hapi-ssr-2",
-  "version": "1.0.0",
-  "main": "src/index.js",
   "author": "Cory Reed",
+  "dependencies": {},
+  "devDependencies": {
+    "@commitlint/cli": "^7.5.2",
+    "@commitlint/config-conventional": "^7.5.0",
+    "husky": "^2.2.0",
+    "lint-staged": "^8.1.6",
+    "prettier": "^1.17.0",
+    "typescript": "^3.4.5"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
   "license": "Apache-2.0",
-  "private": true
+  "lint-staged": {
+    "ignore": [
+      "src/**/*.js"
+    ],
+    "linters": {
+      "*.{js,json,ts,tsc}": [
+        "yarn format",
+        "git add"
+      ]
+    }
+  },
+  "main": "src/index.js",
+  "name": "react-hapi-ssr-2",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write '*.{js,json}' 'src/**/*.{json,ts,tsx}'"
+  },
+  "version": "1.0.0"
 }

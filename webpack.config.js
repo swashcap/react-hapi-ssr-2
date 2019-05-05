@@ -25,7 +25,8 @@ module.exports = {
   },
   output: {
     filename: isEnvProd ? "[name].[hash].js" : "[name].js",
-    path: path.join(__dirname, "dist")
+    path: path.join(__dirname, "dist"),
+    publicPath: ""
   },
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]

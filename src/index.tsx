@@ -6,6 +6,7 @@ import hapi from "hapi";
 
 import { routes } from "./routes/index";
 import { reactSSRPlugin } from "./plugins/react-ssr";
+import { webpackPlugin } from "./plugins/webpack";
 
 export const getServer = async () => {
   const server = new hapi.Server({
@@ -33,6 +34,14 @@ export const getServer = async () => {
         }
       },
       plugin: good
+    });
+  }
+  if (process.env.NODE_ENV !== "production") {
+    await server.register({
+      options: {
+        webpackConfig: require("../webpack.config")
+      },
+      plugin: webpackPlugin
     });
   }
 

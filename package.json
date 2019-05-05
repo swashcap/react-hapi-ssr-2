@@ -11,7 +11,8 @@
     "multipass": "^1.0.2",
     "multistream": "^2.1.1",
     "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "react-dom": "^16.8.6",
+    "semantic-ui-react": "^0.86.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.5.2",

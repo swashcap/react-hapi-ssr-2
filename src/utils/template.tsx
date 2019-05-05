@@ -46,7 +46,7 @@ export const template = ({
           {head}
         </head>
         <body {...bodyProperties}>
-          <div id="content">{content}</div>
+          {content}
         </body>
       </html>
     )

@@ -1,9 +1,10 @@
 import "hard-rejection/register";
 
-import React from 'react';
+import React from "react";
 import good from "good";
 import hapi from "hapi";
 
+import { routes } from "./routes/index";
 import { reactSSRPlugin } from "./plugins/react-ssr";
 
 export const getServer = async () => {
@@ -38,20 +39,19 @@ export const getServer = async () => {
   server.register({
     options: {
       template: {
-        head: <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />,
+        head: (
+          <link
+            rel="stylesheet"
+            href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
+          />
+        ),
         title: "React Hapi SSR 2"
       }
     },
     plugin: reactSSRPlugin
   });
 
-  server.route({
-    handler(request, h) {
-      return h.react("sup");
-    },
-    method: "GET",
-    path: "/"
-  });
+  server.route(routes);
 
   return server;
 };

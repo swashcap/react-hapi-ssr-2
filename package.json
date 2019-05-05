@@ -1,9 +1,16 @@
 {
   "author": "Cory Reed",
-  "dependencies": {},
+  "dependencies": {
+    "good": "^8.1.2",
+    "good-console": "^8.0.0",
+    "good-squeeze": "^5.1.0",
+    "hapi": "^18.1.0",
+    "hard-rejection": "^2.1.0"
+  },
   "devDependencies": {
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
+    "@types/hapi": "^18.0.2",
     "husky": "^2.2.0",
     "lint-staged": "^8.1.6",
     "prettier": "^1.17.0",
@@ -32,7 +39,8 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "format": "prettier --write '*.{js,json}' 'src/**/*.{json,ts,tsx}'"
+    "format": "prettier --write '*.{js,json}' '{src,types}/**/*.{json,ts,tsx}'",
+    "start": "node src/index.js"
   },
   "version": "1.0.0"
 }

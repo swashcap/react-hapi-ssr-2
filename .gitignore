@@ -63,3 +63,4 @@ typings/
 dist
 src/**/*.map
 src/**/*.js
+.awcache

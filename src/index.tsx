@@ -1,5 +1,6 @@
 import "hard-rejection/register";
 
+import React from 'react';
 import good from "good";
 import hapi from "hapi";
 
@@ -37,6 +38,7 @@ export const getServer = async () => {
   server.register({
     options: {
       template: {
+        head: <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css" />,
         title: "React Hapi SSR 2"
       }
     },

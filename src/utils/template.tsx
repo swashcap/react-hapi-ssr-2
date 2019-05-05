@@ -7,6 +7,7 @@ export interface TemplateOptions {
   bodyProperties?: string;
   content?: React.ReactNode;
   description?: string;
+  head?: React.ReactNode;
   htmlProperties?: string;
   title?: string;
 }
@@ -27,6 +28,7 @@ export const template = ({
   bodyProperties,
   content,
   description,
+  head,
   htmlProperties,
   title
 }: TemplateOptions = {}) => {
@@ -41,8 +43,11 @@ export const template = ({
           <title>{title}</title>
           <meta name="description" content={description} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          {head}
         </head>
-        <body {...bodyProperties}>{content}</body>
+        <body {...bodyProperties}>
+          <div id="content">{content}</div>
+        </body>
       </html>
     )
   ]).pipe(passThrough);

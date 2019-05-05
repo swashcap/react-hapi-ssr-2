@@ -1,16 +1,24 @@
 {
   "author": "Cory Reed",
   "dependencies": {
+    "@types/multistream": "^2.1.1",
     "good": "^8.1.2",
     "good-console": "^8.0.0",
     "good-squeeze": "^5.1.0",
     "hapi": "^18.1.0",
-    "hard-rejection": "^2.1.0"
+    "hard-rejection": "^2.1.0",
+    "into-stream": "^5.1.0",
+    "multipass": "^1.0.2",
+    "multistream": "^2.1.1",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
     "@types/hapi": "^18.0.2",
+    "@types/react": "^16.8.16",
+    "@types/react-dom": "^16.8.4",
     "husky": "^2.2.0",
     "lint-staged": "^8.1.6",
     "prettier": "^1.17.0",

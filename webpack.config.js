@@ -1,4 +1,5 @@
 const path = require("path");
+const WebpackManifestPlugin = require("webpack-manifest-plugin");
 
 const isEnvProd = process.env.NODE_ENV === "production";
 
@@ -28,6 +29,7 @@ module.exports = {
     path: path.join(__dirname, "dist"),
     publicPath: ""
   },
+  plugins: [new WebpackManifestPlugin()],
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json"]
   }

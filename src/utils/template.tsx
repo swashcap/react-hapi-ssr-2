@@ -45,9 +45,7 @@ export const template = ({
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           {head}
         </head>
-        <body {...bodyProperties}>
-          {content}
-        </body>
+        <body {...bodyProperties}>{content}</body>
       </html>
     )
   ]).pipe(passThrough);

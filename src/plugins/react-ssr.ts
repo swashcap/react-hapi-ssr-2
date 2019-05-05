@@ -61,7 +61,7 @@ export const reactSSRPlugin: Plugin<ReactSSRPluginOptions> = {
         template(
           Object.assign({}, options.template, handlerOptions, { content })
         )
-      );
+      ).type("text/html");
     };
 
     server.decorate("toolkit", "react", method);

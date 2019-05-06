@@ -1,6 +1,6 @@
 import React from "react";
 import path from "path";
-import { ReactSSRPluginOptions } from "../plugins/react-ssr";
+import { ReactSSRPluginTemplateOptions } from "../plugins/react-ssr";
 
 const SEMANTIC_STYLESHEET = (
   <link
@@ -10,70 +10,76 @@ const SEMANTIC_STYLESHEET = (
   />
 );
 
-const getElements = (
-  manifest: Record<string, string>
-): React.ReactElement[] => {
-  const elements: React.ReactElement[] = [];
+const getElements = (manifest: Record<string, string>) => {
+  const scripts: React.ReactElement[] = [];
+  const styles: React.ReactElement[] = [];
 
   for (const [key, asset] of Object.entries(manifest)) {
     if (/\.css$/.test(asset)) {
-      elements.push(<link href={asset} key={key} type="stylesheet" />);
+      styles.push(<link href={asset} key={key} type="stylesheet" />);
     } else if (/\.js$/.test(asset)) {
-      elements.push(<script key={key} src={asset} />);
+      scripts.push(<script key={key} src={asset} />);
     }
   }
 
-  return elements;
+  return { scripts, styles };
 };
 
 /**
  * Application-specific template options.
  */
-export const getTemplateOptions = (): ReactSSRPluginOptions["template"] => {
+export const getTemplateOptions = (): ReactSSRPluginTemplateOptions => {
   if (process.env.NODE_ENV === "production") {
     const manifest: Record<string, string> = require(path.join(
       require("../../webpack.config").output.path,
       "manifest.json"
     ));
+    const { scripts, styles } = getElements(manifest);
 
-    return { head: [SEMANTIC_STYLESHEET, ...getElements(manifest)] };
-  } else {
     return {
-      head(request) {
-        /**
-         * Webpack-dev-middleware mutates the `res` object with stats for SSR
-         * {@link} https://github.com/webpack/webpack-dev-middleware#server-side-rendering
-         */
-        const stats = (request.raw.res as any).locals.webpackStats.toJson();
-        // Hot module updates arrive as `string[]`:
-        const assetsByChunkName = stats.assetsByChunkName as Record<
-          string,
-          string | string[]
-        >;
+      afterContent: scripts,
+      head: [SEMANTIC_STYLESHEET, ...styles]
+    };
+  } else {
+    return request => {
+      /**
+       * Webpack-dev-middleware mutates the `res` object with stats for SSR
+       * {@link} https://github.com/webpack/webpack-dev-middleware#server-side-rendering
+       */
+      const stats = (request.raw.res as any).locals.webpackStats.toJson();
+      // Hot module updates arrive as `string[]`:
+      const assetsByChunkName = stats.assetsByChunkName as Record<
+        string,
+        string | string[]
+      >;
 
-        const manifest = Object.keys(assetsByChunkName).reduce<
-          Record<string, string>
-        >((memo, key) => {
-          const value = assetsByChunkName[key];
+      const manifest = Object.keys(assetsByChunkName).reduce<
+        Record<string, string>
+      >((memo, key) => {
+        const value = assetsByChunkName[key];
 
-          if (Array.isArray(value)) {
-            return Object.assign(
-              {},
-              memo,
-              ...value.map((v, i) => ({
-                [`${key}${i}`]: `${stats.publicPath}${v}`
-              })),
-              memo
-            );
-          }
+        if (Array.isArray(value)) {
+          return Object.assign(
+            {},
+            memo,
+            ...value.map((v, i) => ({
+              [`${key}${i}`]: `${stats.publicPath}${v}`
+            })),
+            memo
+          );
+        }
 
-          return Object.assign({}, memo, {
-            [key]: `${stats.publicPath}${value}`
-          });
-        }, {});
+        return Object.assign({}, memo, {
+          [key]: `${stats.publicPath}${value}`
+        });
+      }, {});
 
-        return [SEMANTIC_STYLESHEET, ...getElements(manifest)];
-      }
+      const { scripts, styles } = getElements(manifest);
+
+      return {
+        afterContent: scripts,
+        head: [SEMANTIC_STYLESHEET, ...styles]
+      };
     };
   }
 };

@@ -3,16 +3,10 @@ import { DecorationMethod, Plugin, Request, ResponseToolkit } from "hapi";
 
 import { TemplateOptions, template } from "../utils/template";
 
-type ReactSSRPluginTemplateFn<T> = (request: Readonly<Request>) => T;
+type Options = Pick<TemplateOptions, Exclude<keyof TemplateOptions, "content">>;
+type OptionsFn = (request: Readonly<Request>) => Options;
 
-// TODO: Figure out alt value types
-interface ReactSSRPluginTemplateOptions {
-  bodyProperties?: string | ReactSSRPluginTemplateFn<string>;
-  description?: string | ReactSSRPluginTemplateFn<string>;
-  head?: React.ReactNode | ReactSSRPluginTemplateFn<React.ReactNode>;
-  htmlProperties?: string | ReactSSRPluginTemplateFn<string>;
-  title?: string | ReactSSRPluginTemplateFn<string>;
-}
+export type ReactSSRPluginTemplateOptions = Options | OptionsFn;
 
 /**
  * Add types for the response toolkit decorator.
@@ -36,13 +30,18 @@ export interface ReactSSRPluginOptions {
 
 const schemas: Record<string, joi.AnySchema> = {};
 
-schemas.template = joi.object({
-  bodyProperties: [joi.func(), joi.string()],
-  description: [joi.func(), joi.string()],
-  head: joi.any(),
-  htmlProperties: [joi.func(), joi.string()],
-  title: [joi.func(), joi.string()]
-});
+schemas.template = joi.alternatives().try(
+  joi.func(),
+  joi.object({
+    afterContent: joi.object(),
+    beforeContent: joi.object(),
+    bodyProperties: joi.string(),
+    description: joi.string(),
+    head: joi.object(),
+    htmlProperties: joi.string(),
+    title: joi.string()
+  })
+);
 
 schemas.plugin = joi.object({
   template: schemas.template
@@ -58,20 +57,21 @@ export const reactSSRPlugin: Plugin<ReactSSRPluginOptions> = {
       handlerOptions?: ReactSSRPluginTemplateOptions
     ) {
       joi.assert(handlerOptions, schemas.template);
-      const localOptions = Object.assign({}, options.template, handlerOptions);
-      const appliedOptions = Object.keys(localOptions).reduce<TemplateOptions>(
-        (memo, key) => {
-          const name = key as keyof typeof localOptions;
-          const value = localOptions[name];
-          memo[name] =
-            value && typeof value === "function" ? value(this.request) : value;
-          return memo;
-        },
-        {}
-      );
 
+      debugger;
       return this.response(
-        template(Object.assign(appliedOptions, { content }))
+        template(
+          Object.assign(
+            {},
+            typeof options.template === "function"
+              ? options.template(this.request)
+              : options.template,
+            typeof handlerOptions === "function"
+              ? handlerOptions(this.request)
+              : handlerOptions,
+            { content }
+          )
+        )
       ).type("text/html");
     };
 

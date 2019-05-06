@@ -11,7 +11,6 @@ import "../components/header.css";
 const render = () => {
   const el = document.getElementById(APP_ID);
 
-  debugger;
   if (el) {
     hydrate(
       <BrowserRouter>

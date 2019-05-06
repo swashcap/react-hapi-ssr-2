@@ -11,4 +11,10 @@ const render = () => {
   }
 };
 
+// @ts-ignore
+if (module.hot) {
+  // @ts-ignore
+  module.hot.accept()
+}
+
 render();

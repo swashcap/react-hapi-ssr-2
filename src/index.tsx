@@ -7,6 +7,8 @@ import hapi from "hapi";
 import { routes } from "./routes/index";
 import { reactSSRPlugin } from "./plugins/react-ssr";
 import { webpackPlugin } from "./plugins/webpack";
+import { TemplateOptions } from "./utils/template";
+import { getTemplateOptions } from "./utils/get-template-options";
 
 export const getServer = async () => {
   const server = new hapi.Server({
@@ -47,15 +49,7 @@ export const getServer = async () => {
 
   server.register({
     options: {
-      template: {
-        head: (
-          <link
-            rel="stylesheet"
-            href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"
-          />
-        ),
-        title: "React Hapi SSR 2"
-      }
+      template: getTemplateOptions()
     },
     plugin: reactSSRPlugin
   });

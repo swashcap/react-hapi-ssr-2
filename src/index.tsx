@@ -1,13 +1,11 @@
 import "hard-rejection/register";
 
-import React from "react";
 import good from "good";
 import hapi from "hapi";
 
 import { routes } from "./routes/index";
 import { reactSSRPlugin } from "./plugins/react-ssr";
 import { webpackPlugin } from "./plugins/webpack";
-import { TemplateOptions } from "./utils/template";
 import { getTemplateOptions } from "./utils/get-template-options";
 
 export const getServer = async () => {

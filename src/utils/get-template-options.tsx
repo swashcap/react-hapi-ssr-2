@@ -1,6 +1,5 @@
 import React from "react";
 import { ReactSSRPluginOptions } from "../plugins/react-ssr";
-import { string } from "joi";
 
 const SEMANTIC_STYLESHEET = (
   <link

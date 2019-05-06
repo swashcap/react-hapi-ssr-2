@@ -1,4 +1,15 @@
 import React from "react";
-import { Header } from "semantic-ui-react";
+import { Container, Header as SemanticUIHeader } from "semantic-ui-react";
 
-export const App = () => <Header as="h1">Hello, world 2 3!</Header>;
+import { Footer } from "./footer";
+import { Header } from "./header";
+
+export const App = () => (
+  <React.Fragment>
+    <Header />
+    <Container>
+      <SemanticUIHeader as="h1">Hello, world!</SemanticUIHeader>
+    </Container>
+    <Footer />
+  </React.Fragment>
+);

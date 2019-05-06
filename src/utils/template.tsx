@@ -1,7 +1,11 @@
 import React from "react";
-import { renderToNodeStream } from "react-dom/server";
+import intoStream from "into-stream";
 import multistream from "multistream";
-import { PassThrough, Readable } from "stream";
+import { PassThrough } from "stream";
+import { renderToNodeStream, renderToStaticNodeStream } from "react-dom/server";
+import { AllHtmlEntities } from "html-entities";
+
+import { APP_ID } from "./app-id";
 
 export interface TemplateOptions {
   bodyProperties?: string;
@@ -12,42 +16,39 @@ export interface TemplateOptions {
   title?: string;
 }
 
+const entities = new AllHtmlEntities();
+
 /**
  * A stream for `<!doctype` as it isn't supported in React:
  * {@link https://github.com/facebook/react/issues/1035}
  */
-const doctype = () => {
-  const readable = new Readable();
-  readable._read = () => {};
-  readable.push("<!doctype html>");
-  readable.push(null);
-  return readable;
-};
-
 export const template = ({
-  bodyProperties,
+  bodyProperties = "",
   content,
-  description,
+  description = "",
   head,
-  htmlProperties,
-  title
+  htmlProperties = "",
+  title = ""
 }: TemplateOptions = {}) => {
   const passThrough = new PassThrough();
-
   multistream([
-    doctype(),
-    renderToNodeStream(
-      <html {...htmlProperties}>
-        <head>
-          <meta name="charset" content="utf-8" />
-          <title>{title}</title>
-          <meta name="description" content={description} />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          {head}
-        </head>
-        <body {...bodyProperties}>{content}</body>
-      </html>
-    )
+    intoStream(`<!doctype>
+<html${entities.encode(htmlProperties)}>
+  <head>
+    <meta charset="utf-8">
+    <title>${entities.encode(title)}</title>
+    <meta name="description" content=${entities.encode(description)}>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />`),
+    renderToStaticNodeStream(<React.Fragment>{head}</React.Fragment>),
+    intoStream(`
+  </head>
+  <body${entities.encode(bodyProperties)}>
+    <div id=${APP_ID}>`),
+    renderToNodeStream(<React.Fragment>{content}</React.Fragment>),
+    intoStream(`
+    </div>
+  </body>
+</html>`)
   ]).pipe(passThrough);
 
   return passThrough;

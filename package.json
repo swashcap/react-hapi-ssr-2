@@ -47,7 +47,7 @@
       "src/**/*.js"
     ],
     "linters": {
-      "*.{js,json,ts,tsc}": [
+      "*.{js,json,ts,tsx}": [
         "yarn format",
         "git add"
       ]

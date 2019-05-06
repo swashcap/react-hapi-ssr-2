@@ -72,7 +72,7 @@ export const getTemplateOptions = (): ReactSSRPluginOptions["template"] => {
           });
         }, {});
 
-        return [SEMANTIC_STYLESHEET, ...getElements(manifest)]
+        return [SEMANTIC_STYLESHEET, ...getElements(manifest)];
       }
     };
   }

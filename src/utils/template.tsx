@@ -8,6 +8,8 @@ import { AllHtmlEntities } from "html-entities";
 import { APP_ID } from "./app-id";
 
 export interface TemplateOptions {
+  afterContent?: React.ReactNode;
+  beforeContent?: React.ReactNode;
   bodyProperties?: string;
   content?: React.ReactNode;
   description?: string;
@@ -23,6 +25,8 @@ const entities = new AllHtmlEntities();
  * {@link https://github.com/facebook/react/issues/1035}
  */
 export const template = ({
+  afterContent,
+  beforeContent,
   bodyProperties = "",
   content,
   description = "",
@@ -42,11 +46,13 @@ export const template = ({
     renderToStaticNodeStream(<React.Fragment>{head}</React.Fragment>),
     intoStream(`
   </head>
-  <body${entities.encode(bodyProperties)}>
-    <div id=${APP_ID}>`),
+  <body${entities.encode(bodyProperties)}>`),
+    renderToStaticNodeStream(<React.Fragment>{beforeContent}</React.Fragment>),
+    intoStream(`<div id=${APP_ID}>`),
     renderToNodeStream(<React.Fragment>{content}</React.Fragment>),
+    intoStream(`</div>`),
+    renderToStaticNodeStream(<React.Fragment>{afterContent}</React.Fragment>),
     intoStream(`
-    </div>
   </body>
 </html>`)
   ]).pipe(passThrough);

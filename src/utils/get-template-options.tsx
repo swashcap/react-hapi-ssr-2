@@ -1,4 +1,5 @@
 import React from "react";
+import path from "path";
 import { ReactSSRPluginOptions } from "../plugins/react-ssr";
 
 const SEMANTIC_STYLESHEET = (
@@ -30,10 +31,10 @@ const getElements = (
  */
 export const getTemplateOptions = (): ReactSSRPluginOptions["template"] => {
   if (process.env.NODE_ENV === "production") {
-    const manifest: Record<
-      string,
-      string
-    > = require("../../src/dist/manifest.json");
+    const manifest: Record<string, string> = require(path.join(
+      require("../../webpack.config").output.path,
+      "manifest.json"
+    ));
 
     return { head: [SEMANTIC_STYLESHEET, ...getElements(manifest)] };
   } else {

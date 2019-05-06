@@ -39,7 +39,7 @@ const schemas: Record<string, joi.AnySchema> = {};
 schemas.template = joi.object({
   bodyProperties: [joi.func(), joi.string()],
   description: [joi.func(), joi.string()],
-  head: [joi.func(), joi.object(), joi.string()],
+  head: joi.any(),
   htmlProperties: [joi.func(), joi.string()],
   title: [joi.func(), joi.string()]
 });

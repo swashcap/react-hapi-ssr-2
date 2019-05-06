@@ -61,6 +61,7 @@ typings/
 .next
 
 dist
+lib
 src/**/*.map
 src/**/*.js
 .awcache

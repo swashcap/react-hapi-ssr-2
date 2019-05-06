@@ -32,7 +32,7 @@ module.exports = {
   output: {
     filename: isEnvProd ? "[name].[hash].js" : "[name].js",
     path: path.join(__dirname, "dist"),
-    publicPath: ""
+    publicPath: "/assets/"
   },
   plugins: [
     !isEnvProd && new webpack.HotModuleReplacementPlugin(),

@@ -23,6 +23,17 @@ module.exports = {
         test: /\.tsx?$/
       },
       {
+        test: /\.css$/,
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: { importLoaders: 1 }
+          },
+          "postcss-loader"
+        ]
+      },
+      {
         enforce: "pre",
         loader: "source-map-loader",
         test: /\.js$/

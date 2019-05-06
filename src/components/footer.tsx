@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Divider, Grid } from "semantic-ui-react";
 
 export const Footer = () => (
-  <Container as="footer" role="contentinfo">
+  <Container as="footer" className="footer" role="contentinfo">
     <Divider />
     <Grid columns={2} stackable>
       <Grid.Column>

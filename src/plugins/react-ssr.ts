@@ -1,17 +1,18 @@
 import joi from "joi";
-import {
-  DecorationMethod,
-  Plugin,
-  ResponseToolkit,
-  ResponseObject
-} from "hapi";
+import { DecorationMethod, Plugin, Request, ResponseToolkit } from "hapi";
 
 import { TemplateOptions, template } from "../utils/template";
 
-type TemplateOptionsWithoutContent = Pick<
-  TemplateOptions,
-  Exclude<keyof TemplateOptions, "content">
->;
+type ReactSSRPluginTemplateFn<T> = (request: Readonly<Request>) => T;
+
+// TODO: Figure out alt value types
+interface ReactSSRPluginTemplateOptions {
+  bodyProperties?: string | ReactSSRPluginTemplateFn<string>;
+  description?: string | ReactSSRPluginTemplateFn<string>;
+  head?: React.ReactNode | ReactSSRPluginTemplateFn<React.ReactNode>;
+  htmlProperties?: string | ReactSSRPluginTemplateFn<string>;
+  title?: string | ReactSSRPluginTemplateFn<string>;
+}
 
 /**
  * Add types for the response toolkit decorator.
@@ -24,23 +25,23 @@ declare module "hapi" {
   interface ResponseToolkit {
     react(
       content: React.ReactNode,
-      handlerOptions?: TemplateOptionsWithoutContent
+      handlerOptions?: ReactSSRPluginTemplateOptions
     ): ResponseObject;
   }
 }
 
 export interface ReactSSRPluginOptions {
-  template?: TemplateOptionsWithoutContent;
+  template?: ReactSSRPluginTemplateOptions;
 }
 
 const schemas: Record<string, joi.AnySchema> = {};
 
 schemas.template = joi.object({
-  bodyProperties: joi.string(),
-  description: joi.string(),
-  head: joi.any().allow(joi.object(), joi.string()),
-  htmlProperties: joi.string(),
-  title: joi.string()
+  bodyProperties: [joi.func(), joi.string()],
+  description: [joi.func(), joi.string()],
+  head: [joi.func(), joi.object(), joi.string()],
+  htmlProperties: [joi.func(), joi.string()],
+  title: [joi.func(), joi.string()]
 });
 
 schemas.plugin = joi.object({
@@ -54,14 +55,23 @@ export const reactSSRPlugin: Plugin<ReactSSRPluginOptions> = {
 
     const method: DecorationMethod<ResponseToolkit> = function reactSSRHandler(
       content: React.ReactNode,
-      handlerOptions?: TemplateOptionsWithoutContent
+      handlerOptions?: ReactSSRPluginTemplateOptions
     ) {
       joi.assert(handlerOptions, schemas.template);
+      const localOptions = Object.assign({}, options.template, handlerOptions);
+      const appliedOptions = Object.keys(localOptions).reduce<TemplateOptions>(
+        (memo, key) => {
+          const name = key as keyof typeof localOptions;
+          const value = localOptions[name];
+          memo[name] =
+            value && typeof value === "function" ? value(this.request) : value;
+          return memo;
+        },
+        {}
+      );
 
       return this.response(
-        template(
-          Object.assign({}, options.template, handlerOptions, { content })
-        )
+        template(Object.assign(appliedOptions, { content }))
       ).type("text/html");
     };
 
